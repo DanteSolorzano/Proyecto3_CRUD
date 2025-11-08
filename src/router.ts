@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { createActor } from './handlers/films'
 
 const router = Router()
 //routing
@@ -6,9 +7,7 @@ router.get('/', (req, resp) => {
     resp.json('Desde GET')   
 })
 
-router.post('/', (req, resp) => {
-    resp.json('Desde POST')   
-})
+router.post('/', createActor)
 
 router.put('/', (req, resp) => {
     resp.json('Desde PUT')   
