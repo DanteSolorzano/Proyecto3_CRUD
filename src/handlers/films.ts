@@ -104,8 +104,6 @@ await check('special_features')
 
 await check('last_update')
   .optional()
-  .isISO8601()
-  .withMessage('La fecha de actualización debe tener un formato válido (ISO 8601)')
   .run(req);
 
     try {
