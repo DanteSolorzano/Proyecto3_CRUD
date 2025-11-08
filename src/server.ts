@@ -20,6 +20,9 @@ connectDB()
 
 const server = express()
 
+//leer datos de formularios
+server.use(express.json())
+
 server.use('/api/actors', router)
 
 export default server

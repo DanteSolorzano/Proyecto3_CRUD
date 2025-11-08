@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, Default, AllowNull } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, Default, AllowNull, PrimaryKey, AutoIncrement } from 'sequelize-typescript';
 
 @Table({
   tableName: 'film',
@@ -6,6 +6,8 @@ import { Table, Column, Model, DataType, Default, AllowNull } from 'sequelize-ty
 })
 export class Film extends Model {
   
+  @PrimaryKey
+  @AutoIncrement
   @Column({
     type: DataType.SMALLINT.UNSIGNED
   })
