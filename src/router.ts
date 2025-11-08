@@ -1,24 +1,16 @@
 import { Router } from 'express'
-import { createActor } from './handlers/films'
+import { createFilm, deleteFilm, getFilmById, getFilms, updateFilm } from './handlers/films'
+import { handleInputErrors } from './middleware'
 
 const router = Router()
 //routing
-router.get('/', (req, resp) => {
-    resp.json('Desde GET')   
-})
+router.get('/get', getFilms)
+router.get('/get/:id',handleInputErrors, getFilmById)
 
-router.post('/', createActor)
+router.post('/', handleInputErrors, createFilm)
 
-router.put('/', (req, resp) => {
-    resp.json('Desde PUT')   
-})
+router.put('/edit/:id', handleInputErrors, updateFilm)
 
-router.patch('/', (req, resp) => {
-    resp.json('Desde PATCH')   
-})
-
-router.delete('/', (req, resp) => {
-    resp.json('Desde DELETE')   
-})
+router.delete('/delete/:id', handleInputErrors, deleteFilm)
 
 export default router

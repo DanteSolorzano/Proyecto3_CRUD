@@ -1,8 +1,38 @@
 import { Request, Response } from 'express'
-import { check, validationResult } from 'express-validator'
+import { check } from 'express-validator'
 import Film from '../models/Film.model'
 
-export const createActor = async (req : Request, resp: Response) => {
+export const getFilms = async (req: Request, res: Response) => {
+   try {
+    const film = await Film.findAll()
+    res.json({data: film})    
+   } catch (error) {
+    console.log(error)
+   }
+}
+
+export const getFilmById = async (req: Request, res: Response) => {
+
+    await check('film_id').isInt({min: 0}).withMessage('ID no valido').run(req);
+
+    try {
+            const { id } = req.params
+            const film = await Film.findByPk(id)
+
+            if(!film){
+                return res.status(404).json({
+                    error: 'Pelicula no encontrada'
+                })
+            }
+            res.json({data: film})
+
+
+        } catch (error) {
+     console.log(error)
+    }
+ }
+
+export const createFilm = async (req : Request, res: Response) => {
 
     // Validaciones
   await check('title')
@@ -27,14 +57,10 @@ await check('release_year')
 await check('language_id')
   .notEmpty()
   .withMessage('El ID de idioma es obligatorio')
-  .isInt({ min: 1 })
-  .withMessage('El ID de idioma debe ser un número entero positivo')
   .run(req);
 
 await check('original_language_id')
   .optional()
-  .isInt({ min: 1 })
-  .withMessage('El ID del idioma original debe ser un número entero positivo')
   .run(req);
 
 await check('rental_duration')
@@ -82,12 +108,61 @@ await check('last_update')
   .withMessage('La fecha de actualización debe tener un formato válido (ISO 8601)')
   .run(req);
 
+    try {
+        const film = await Film.create(req.body)
+        res.json({data: film})
+    } catch (error) {
+        console.log(error)
+    }   
 
-    let errors = validationResult(req)
-    if(!errors.isEmpty()){
-        return resp.status(400).json({errors: errors.array()})
+}
+
+export const updateFilm = async (req: Request, res: Response) => {
+
+    //se valida su exitencia
+    const { id } = req.params
+    const film = await Film.findByPk(id)
+
+    if(!film){
+        return res.status(404).json({
+            error: 'Pelicula no encontrada'
+        })
     }
 
-    const film = await Film.create(req.body)
-    resp.json({data: film})
+    //se actualiza la pelicula
+    await film.update(req.body)
+    await film.save()
+
+    res.json({data: film})
 }
+
+export const deleteFilm = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const film = await Film.findByPk(id);
+
+    if (!film) {
+      return res.status(404).json({
+        error: 'Película no encontrada',
+      });
+    }
+
+    await film.destroy();
+
+    return res.json({
+      message: 'Película eliminada correctamente',
+    });
+  
+  } catch (error: any) {
+    console.log('Error al eliminar película:');
+    console.log('Mensaje:', error.message); // Mensaje general
+    console.log('Código SQL:', error.parent?.code); // Código MySQL (por ej. ER_ROW_IS_REFERENCED_2)
+    console.log('Mensaje SQL:', error.parent?.sqlMessage); // Mensaje SQL legible
+    console.log('Consulta SQL:', error.parent?.sql); // La consulta que Sequelize intentó ejecutar
+
+    return res.status(500).json({
+      error: 'Error al eliminar película',
+      detalle: error.parent?.sqlMessage || error.message, // Muestra el mensaje SQL real
+    });
+  }
+};

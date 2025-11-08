@@ -23,6 +23,6 @@ const server = express()
 //leer datos de formularios
 server.use(express.json())
 
-server.use('/api/actors', router)
+server.use('/api/film', router)
 
 export default server
